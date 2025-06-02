@@ -1,15 +1,33 @@
+using System;
 using HarmonyLib;
 using SoftMasking;
 using UnityEngine;
 
 namespace SoftMaskKiller.src.Patches;
-public static class SoftMaskPatch
+
+[HarmonyPatch(typeof(SoftMask))]
+static class SoftMaskPatch
 {
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(SoftMask), "OnEnable")]
-    static void PrefixSoftMaskOnEnable(SoftMask __instance)
+    [HarmonyPatch(nameof(SoftMask.OnEnable)), HarmonyFinalizer]
+    public static Exception PostfixSoftMaskOnEnable(SoftMask __instance, Exception __exception)
     {
-        SoftMaskKiller.Log.LogDebug("Preventing SoftMask from being enabled");
-        Object.Destroy(__instance);
+        if (__exception != null)
+        {
+            SoftMaskKiller.Log.LogWarning("Preventing SoftMask from being enabled because of an exception: " + __exception);
+            UnityEngine.Object.Destroy(__instance);
+            return null;
+        }
+        return __exception;
+    }
+    
+    [HarmonyPatch(nameof(SoftMask.OnDisable)), HarmonyFinalizer]
+    public static Exception PostfixSoftMaskOnDisable(SoftMask __instance, Exception __exception)
+    {
+        if (__exception != null)
+        {
+            SoftMaskKiller.Log.LogWarning("Preventing SoftMask from erroring because of an exception: " + __exception);
+            return null;
+        }
+        return __exception;
     }
 }

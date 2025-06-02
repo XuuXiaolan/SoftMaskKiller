@@ -26,24 +26,25 @@
         <Exec Command="netcode-patch -nv 1.5.2 &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
     </Target>-->
 	
-	<Target Name="CopyForUpload" AfterTargets="Build">
+    <Target Name="CopyForUpload" AfterTargets="Build">
         <PropertyGroup>
             <DistributionDir>$(SolutionDir)\Output\dist</DistributionDir>
         </PropertyGroup>
-		
+
         <PropertyGroup>
             <PluginOutDir>$(SolutionDir)\Plugin\$(OutDir)</PluginOutDir>
             <PluginsDistributionDir>$(DistributionDir)\BepInEx\plugins</PluginsDistributionDir>
         </PropertyGroup>
 
-        <Message Importance="High" Text="Copyng Plugin to DistributionDir" />
+        <Message Importance="High" Text="Copyng Plugin to DistributionDir"/>
 
+        <MakeDir Directories="$(PluginsDistributionDir)"/>
         <ItemGroup>
-            <PluginOutputFiles Include="$(PluginOutDir)\**" Exclude="$(PluginOutDir)\**\*.deps.json" />
+            <PluginOutputFiles Include="$(PluginOutDir)\**" Exclude="$(PluginOutDir)\**\*.deps.json"/>
         </ItemGroup>
         <Copy
-            SourceFiles="@(PluginOutputFiles)"
-            DestinationFolder="$(PluginsDistributionDir)"
+                SourceFiles="@(PluginOutputFiles)"
+                DestinationFolder="$(PluginsDistributionDir)"
         />
     </Target>
 </Project>
